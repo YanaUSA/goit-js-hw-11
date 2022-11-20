@@ -9,7 +9,7 @@ export default class PicturesApi {
         this.page = 1;
     }
 
-    fetchPics() {
+    async fetchPics() {
         const searchPictureParams = new URLSearchParams({
             key: "31431099-cb6424a99d97f67db3bc0cdc7",
             q: `${this.searchQuery}`,
@@ -17,35 +17,25 @@ export default class PicturesApi {
             orientation: "horizontal",
             safesearch: "true",
             page: `${this.page}`,
-            per_page: 100,
+            per_page: 3,
         });
 
-        return fetch(`${BASE_URL}?${searchPictureParams}`).then((response) => {
-                if (!response.ok) {
-                    throw new Error(response.status);
-                }
-                return response.json();
+        try {
+            const response = await axios.get(`${BASE_URL}?${searchPictureParams}`)
+
+            if (response.data.hits.length === 0) {
+                Notify.failure("Sorry, there are no images matching your search query. Please try again.");            
             }
-        ).then(data => {
-            // console.log(data)
-            if (data.hits.length === 0) {
-                Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-            }
+            
+            Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+            
             this.page += 1;
 
-            return data;
+            return response.data;
+                
+        } catch (error) {
+            Notify.failure(error.message);
         }
-        ).catch((error) => {
-        if (error.message === "404") {
-
-            console.log("ERROR 404");
-
-            // document.body.innerHTML = "";
-            // const errorMarkup = `<p class="error"><b>Error: 404</b></p>`;
-            // errorMarkupRef.innerHTML = errorMarkup;        
-            }
-        }
-        ) 
     }
 
     get query() {
