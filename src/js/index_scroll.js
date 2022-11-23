@@ -3,23 +3,22 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import PicturesApi from "./picturesApiFetch";
+import debounce from "lodash.debounce";
+import throttle from "lodash.throttle";
+
 
 const refs = {
   form: document.querySelector("#search-form"),
   input: document.querySelector("[name=searchQuery]"),
   formButton: document.querySelector("button"),
   gallery: document.querySelector(".gallery"),
-  loadMoreButton: document.querySelector(".load-more"),  
 }
 
 const picturesApi = new PicturesApi();
 
-refs.loadMoreButton.hidden = true;
-
 let counter = 0;
 
 refs.form.addEventListener("submit", onSearchInput);
-refs.loadMoreButton.addEventListener("click", onLoadMore);
 
 function clearSearch() {
   refs.gallery.innerHTML = "";
@@ -37,17 +36,12 @@ function onSearchInput(evt) {
   picturesApi.resetPage();
 
   picturesApi.fetchPics().then((data) => {  
-      clearSearch();
-      markupGallery(data);
-    refs.loadMoreButton.hidden = false;
+    clearSearch();
+    markupGallery(data);
     }       
-  )  
-};
-
-  console.log("ysssssssss")
-
-function onLoadMore() {
-  picturesApi.fetchPics().then(markupGallery);
+  ) 
+  
+  window.addEventListener("scroll", throttle(onScroll, 250));
 };
 
 function markupGallery(data) {
@@ -88,8 +82,35 @@ function markupGallery(data) {
 function hitsCounter(data) {
   counter += data.hits.length;
 
-  if (counter >= data.totalHits) {  
-    refs.loadMoreButton.hidden = true;
+    // console.log("data.totalHits", data.totalHits)
+  if (counter >= data.totalHits) {
     return Notify.failure("We're sorry, but you've reached the end of search results.");
   }
 };
+
+function onScroll() {
+  const { scrollHeight, scrollTop, clientHeight } = document.documentElement
+
+  const scrollPosition = scrollHeight - clientHeight
+  const scrollTopRound = Math.round(scrollTop)
+
+  // console.log("scrollPosition", scrollPosition)
+  // console.log("scrollTop", Math.round(scrollTop))
+
+    if (scrollPosition === scrollTopRound || scrollPosition === scrollTopRound - 1 || scrollPosition === scrollTopRound + 1) {
+      picturesApi.fetchPics().then(markupGallery);
+  }
+}
+  
+
+
+
+
+  //     const { height: cardHeight } = document
+  // .querySelector(".gallery")
+  // .firstElementChild.getBoundingClientRect();
+
+  //   window.scrollBy({
+  //     top: cardHeight * 2,
+  //     behavior: "smooth",
+  //   });

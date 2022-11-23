@@ -3,7 +3,7 @@
 }
 
 body {
-  /* scroll-behavior: smooth; */
+  scroll-behavior: smooth;
   margin-top: 100px;
   background-color: #fafafa;
   color: #212121;
@@ -32,6 +32,7 @@ form {
 
 .form-bgr {
   position: fixed;
+  z-index: 99;
   top: 0;
   left: 0;
   width: 100vw;
