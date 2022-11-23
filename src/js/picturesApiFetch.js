@@ -17,7 +17,7 @@ export default class PicturesApi {
             orientation: "horizontal",
             safesearch: "true",
             page: `${this.page}`,
-            per_page: 3,
+            per_page: 100,
         });
 
         try {
@@ -25,14 +25,14 @@ export default class PicturesApi {
 
             if (response.data.hits.length === 0) {
                 Notify.failure("Sorry, there are no images matching your search query. Please try again.");            
-            }
-            
-            Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+            } else if (this.page === 1) {
+                Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+            }            
             
             this.page += 1;
 
             return response.data;
-                
+
         } catch (error) {
             Notify.failure(error.message);
         }

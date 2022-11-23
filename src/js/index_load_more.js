@@ -1,11 +1,9 @@
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import axios from 'axios';
 
 import PicturesApi from "./picturesApiFetch";
-
-// Notify.success("Hooray! We found totalHits images.");
+import debounce from "lodash.debounce";
 
 const refs = {
   form: document.querySelector("#search-form"),
@@ -14,7 +12,6 @@ const refs = {
   gallery: document.querySelector(".gallery"),
   loadMoreButton: document.querySelector(".load-more"),  
 }
-errorMarkupRef = document.querySelector(".error-markup");
 
 const picturesApi = new PicturesApi();
 
@@ -23,7 +20,11 @@ refs.loadMoreButton.hidden = true;
 let counter = 0;
 
 refs.form.addEventListener("submit", onSearchInput);
-refs.loadMoreButton.addEventListener("click", onLoadMore)
+refs.loadMoreButton.addEventListener("click", onLoadMore);
+
+function clearSearch() {
+  refs.gallery.innerHTML = "";
+}
 
 function onSearchInput(evt) {
   evt.preventDefault();
@@ -35,62 +36,74 @@ function onSearchInput(evt) {
   }
 
   picturesApi.resetPage();
-  picturesApi.fetchPics().then((data) => {
+
+  picturesApi.fetchPics().then((data) => {  
       clearSearch();
       markupGallery(data);
-      refs.loadMoreButton.hidden = false;
-    }    
-  )
+    refs.loadMoreButton.hidden = false;
+    }       
+  )  
 };
 
-function onLoadMore() {  
+  console.log("ysssssssss")
+
+function onLoadMore() {
   picturesApi.fetchPics().then(markupGallery);
 };
 
 function markupGallery(data) {
   const markup = data.hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
         return `<div class="photo-card">
-            <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-            <div class="info">
-            <p class="info-item">
-            <b>Likes ${likes}</b>
-            </p>
-            <p class="info-item">
-            <b>Views ${views}</b>
-            </p>
-            <p class="info-item">
-            <b>Comments ${comments}</b>
-            </p>
-            <p class="info-item">
-            <b>Downloads ${downloads}</b>
-            </p>
+        <a href="${largeImageURL}">
+        <img src="${webformatURL}" alt="${tags}" loading="lazy" class="picture"/>
+        </a>
+        <div class="info">
+          <p class="info-item">
+            <b>Likes</b>
+            ${likes}
+          </p>
+          <p class="info-item">
+            <b>Views</b>
+            ${views}
+          </p>
+          <p class="info-item">
+            <b>Comments</b>
+            ${comments}
+          </p>
+          <p class="info-item">
+            <b>Downloads</b>
+            ${downloads}
+          </p>
         </div>
-        </div>` 
+      </div>
+    ` 
       }).join("");
 
-  refs.gallery.insertAdjacentHTML("beforeend", markup);  
+  refs.gallery.insertAdjacentHTML("beforeend", markup);
 
-  hitsCounter(data)
-}
+  hitsCounter(data);
 
-function clearSearch() {
-  refs.gallery.innerHTML = "";
+  new SimpleLightbox('.gallery a', { captionDelay: 250 }).refresh();
 }
 
 function hitsCounter(data) {
   counter += data.hits.length;
 
   if (counter >= data.totalHits) {  
-      console.log("counter", counter)
-    console.log("totalHits", data.totalHits)
-    
     refs.loadMoreButton.hidden = true;
-
     return Notify.failure("We're sorry, but you've reached the end of search results.");
-  };
-}
+  }
+};
 
+// function smoothScrolling() {
+//   debounce(() => {
+//   const { height: cardHeight } = document
+//     .querySelector(".gallery")
+//     .firstElementChild.getBoundingClientRect();
 
-const lightbox = new SimpleLightbox('.gallery a', { /* options */ });
-
-// console.dir(refs.loadMoreButton.hidden)
+//   window.scrollBy({
+//     top: cardHeight * 2,
+//     behavior: "smooth",
+//   }
+//   );
+// }, 1000);} 

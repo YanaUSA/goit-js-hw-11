@@ -7,17 +7,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.min.css"
       integrity="sha512-wpPYUAdjBVSE4KJnH1VR1HeZfpl1ub8YT/NKx4PuQ5NmX2tKuGu6U/JRp5y+Y8XG2tV+wKQpNHVUX03MfMFn9Q=="
       crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
 
+    
+
     <div class="form-bgr">
       <form class="search-form" id="search-form">
         <input type="text" name="searchQuery" autocomplete="off" placeholder="Search images..." />
-        <button type="submit">
-          <svg src="./images/defs.svg" width="20" height="20">
-          </svg>
-        </button>
+        <button type="submit"></button>
       </form>
     </div>
     
@@ -26,9 +28,14 @@
     </div>
 
     
-    <button type="button" class="load-more is-hidden">Load more</button>
+    <button type="button" class="load-more">Load more</button>
     
-    <script type="module" src="./js/index.js"></script> 
-    <!-- <script type="module" src="./js/index_fetch.js"></script> -->
+    <script type="module" src="./js/index_load_more.js"></script> 
+
+    <!-- <script type="module" src="./js/index_infinity_scroll.js"></script> -->
   </body>
 </html>
+
+
+
+
