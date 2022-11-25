@@ -40,15 +40,13 @@ function onSearchInput(evt) {
       clearSearch();
       markupGallery(data);
     refs.loadMoreButton.hidden = false;
-    smoothScroll()
     }       
   )  
 };
 
   console.log("ysssssssss")
 
-function onLoadMore() {
-  smoothScroll()
+function onLoadMore() { 
   picturesApi.fetchPics().then(markupGallery);
 };
 
@@ -84,15 +82,18 @@ function markupGallery(data) {
 
   hitsCounter(data);
 
-  new SimpleLightbox('.gallery a', { captionDelay: 250 }).refresh();
+  new SimpleLightbox('.gallery a', { captionDelay: 250 }).refresh();  
 }
 
 function hitsCounter(data) {
   counter += data.hits.length;
+  if (counter > 40) {
 
-  if (counter >= data.totalHits) {  
+      console.log(counter)
+      smoothScroll();
+  } else if (counter >= data.totalHits) {  
     refs.loadMoreButton.hidden = true;
-    smoothScroll()
+    
     return Notify.failure("We're sorry, but you've reached the end of search results.");
   }
 };
