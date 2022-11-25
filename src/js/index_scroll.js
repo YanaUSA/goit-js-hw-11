@@ -86,7 +86,7 @@ const scrollObserver = new IntersectionObserver(([entry], observer) => {
   picturesApi.fetchPics().then(markupGallery);
 };
 }
-, { rootMargin: "200px", threshold: 0.5 });
+, { rootMargin: "300px", threshold: 0.5 });
 
     
 function hitsCounter(data) {

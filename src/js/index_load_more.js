@@ -40,6 +40,7 @@ function onSearchInput(evt) {
       clearSearch();
       markupGallery(data);
     refs.loadMoreButton.hidden = false;
+    smoothScroll()
     }       
   )  
 };
@@ -47,6 +48,7 @@ function onSearchInput(evt) {
   console.log("ysssssssss")
 
 function onLoadMore() {
+  smoothScroll()
   picturesApi.fetchPics().then(markupGallery);
 };
 
