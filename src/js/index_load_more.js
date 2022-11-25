@@ -90,6 +90,16 @@ function hitsCounter(data) {
 
   if (counter >= data.totalHits) {  
     refs.loadMoreButton.hidden = true;
+    smoothScroll()
     return Notify.failure("We're sorry, but you've reached the end of search results.");
   }
 };
+
+function smoothScroll() {
+const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: "smooth",
+    });
+}

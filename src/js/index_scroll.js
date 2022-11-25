@@ -3,9 +3,6 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import PicturesApi from "./picturesApiFetch";
-import debounce from "lodash.debounce";
-import throttle from "lodash.throttle";
-
 
 const refs = {
   form: document.querySelector("#search-form"),
@@ -40,8 +37,6 @@ function onSearchInput(evt) {
     markupGallery(data);
     }       
   ) 
-  
-  window.addEventListener("scroll", throttle(onScroll, 250));
 };
 
 function markupGallery(data) {
@@ -77,40 +72,29 @@ function markupGallery(data) {
   hitsCounter(data);
 
   new SimpleLightbox('.gallery a', { captionDelay: 250 }).refresh();
+
+  const scrollTarget = refs.gallery.lastElementChild;
+
+  if (scrollTarget) {
+    scrollObserver.observe(scrollTarget);       
+  }
 }
 
+const scrollObserver = new IntersectionObserver(([entry], observer) => {
+  if (entry.isIntersecting) {
+  scrollObserver.unobserve(entry.target);
+  picturesApi.fetchPics().then(markupGallery);
+};
+}
+, { rootMargin: "200px", threshold: 0.5 });
+
+    
 function hitsCounter(data) {
   counter += data.hits.length;
 
-    // console.log("data.totalHits", data.totalHits)
   if (counter >= data.totalHits) {
-    return Notify.failure("We're sorry, but you've reached the end of search results.");
+    Notify.failure("We're sorry, but you've reached the end of search results.");
+    scrollObserver.unobserve(entry.target);
+    return;
   }
 };
-
-function onScroll() {
-  const { scrollHeight, scrollTop, clientHeight } = document.documentElement
-
-  const scrollPosition = scrollHeight - clientHeight
-  const scrollTopRound = Math.round(scrollTop)
-
-  // console.log("scrollPosition", scrollPosition)
-  // console.log("scrollTop", Math.round(scrollTop))
-
-    if (scrollPosition === scrollTopRound || scrollPosition === scrollTopRound - 1 || scrollPosition === scrollTopRound + 1) {
-      picturesApi.fetchPics().then(markupGallery);
-  }
-}
-  
-
-
-
-
-  //     const { height: cardHeight } = document
-  // .querySelector(".gallery")
-  // .firstElementChild.getBoundingClientRect();
-
-  //   window.scrollBy({
-  //     top: cardHeight * 2,
-  //     behavior: "smooth",
-  //   });
